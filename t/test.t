@@ -5,7 +5,7 @@ use warnings;
 
 use Data::Pageset::Variable;
 
-use Test::More tests => 13;
+use Test::More tests => 16;
 
 #------------------------------------------------------------------------------
 # setup stuff
@@ -13,8 +13,8 @@ use Test::More tests => 13;
 
 my @list = ( 1 .. 100 );
 my $args = { total_entries              => scalar @list, 
-	     variable_entries_per_page  => { 1 => 30, 2 => 20, 4 => 23, },
-	     entries_per_page           => 10,
+	variable_entries_per_page  => { 1 => 30, 2 => 20, 4 => 23, },
+	entries_per_page           => 10,
 };
 
 #------------------------------------------------------------------------------
@@ -25,14 +25,14 @@ my $args = { total_entries              => scalar @list,
 	local $args->{variable_entries_per_page} = [ 1 .. 10 ];
 	eval { Data::Pageset::Variable->new($args) };
 	like $@, qr/hashref/, 
-		"Can't make a Data::Pageset::Variable unless entries_per_page is a hashref";
+	"Can't make a Data::Pageset::Variable unless entries_per_page is a hashref";
 }
 
 {
 	local $args->{entries_per_page};
 	eval { Data::Pageset::Variable->new($args) };
 	like $@, qr/supplied/, 
-		"Can't make a Data::Pageset::Variable unless we tell it the default entries_per_page";
+	"Can't make a Data::Pageset::Variable unless we tell it the default entries_per_page";
 }
 
 {
@@ -40,11 +40,22 @@ my $args = { total_entries              => scalar @list,
 }
 
 #------------------------------------------------------------------------------
+# behaves like Data::Pageset with no variable_entries_per_page
+#------------------------------------------------------------------------------
+
+{
+	my $args = { total_entries => scalar @list, entries_per_page   => 10 };
+	isa_ok my $dp = Data::Pageset::Variable->new($args) => 'Data::Pageset::Variable';
+	is $dp->first => 1, "first on first page (no variable_entries_per_page";
+	is $dp->last => 10, "last on first page (no variable_entries_per_page"; 
+}
+
+#------------------------------------------------------------------------------
 # entries on the page
 #------------------------------------------------------------------------------
 
 {
-	# page 1
+# page 1
 	local $args->{current_page} = 1;
 	my $dp = Data::Pageset::Variable->new($args);
 	is $dp->first => 1, "first on first page";
@@ -52,7 +63,7 @@ my $args = { total_entries              => scalar @list,
 }
 
 {
-	# page 2
+# page 2
 	local $args->{current_page} = 2;
 	my $dp = Data::Pageset::Variable->new($args);
 	is $dp->first => 31, "first on second page";
@@ -60,7 +71,7 @@ my $args = { total_entries              => scalar @list,
 }
 
 {
-	# page 3
+# page 3
 	local $args->{current_page} = 3;
 	my $dp = Data::Pageset::Variable->new($args);
 	is $dp->first => 51, "first on third page";
@@ -68,7 +79,7 @@ my $args = { total_entries              => scalar @list,
 }
 
 {
-	# page 4
+# page 4
 	local $args->{current_page} = 4;
 	my $dp = Data::Pageset::Variable->new($args);
 	is $dp->first => 61, "first on fourth page";
@@ -76,10 +87,12 @@ my $args = { total_entries              => scalar @list,
 }
 
 {
-	# ridiculously large page
+# ridiculously large page
 	local $args->{current_page} = 300;
 	my $dp = Data::Pageset::Variable->new($args);
 	is $dp->first => 94, "first on last page";
 	is $dp->last => 100, "last on last page";
 }
+
+
 

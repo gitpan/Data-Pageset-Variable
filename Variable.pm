@@ -1,5 +1,5 @@
 package Data::Pageset::Variable;
-$Data::Pageset::Variable::VERSION = '0.01';
+$Data::Pageset::Variable::VERSION = '0.02';
 
 use strict;
 use warnings;
@@ -19,9 +19,9 @@ Data::Pageset::Variable - Variable results on each page of results.
 
         my $page_info = Data::Pageset->new(
                 { 
-                        total_entries               => $total_entries, 
-                        variable_enteries_per_page  => { 1 => 30, 2 => 20, 3 => 10, } 
-                        entries_per_page            => 10,
+                        total_entries              => $total_entries, 
+                        variable_entries_per_page  => { 1 => 30, 2 => 20, 3 => 10, } 
+                        entries_per_page           => 10,
                 }
         );
 
@@ -37,16 +37,30 @@ the first page as on the second, and so on.
 
 So now you can!
 
+=head1 HAIKU
+
+Different numbers
+Of results on each page helps
+Tabulate results
+
+This arose as Tony (http://www.tmtm.com/nothing/) suggested to me that if I can't 
+write the documentation of a module in haiku, then it is doing too many things. 
+As I (also) believe that modules should be responsible for one concept, and one only.
+
+Also, I have no poetical ability, so forgive my clumsy attempt.
+
 =head2 variable_entries_per_page
 
         # In the constructor hashref...
 		variable_entries_per_page => { 1 => 30, 2 => 20, 3 => 10, },
 
-The variable_entries_per_page argument can takes a hashref. 
+The variable_entries_per_page argument takes a hashref. 
 
 The key/value pairs of this hashref are the pages and the number of entries
 on the page. If there is a page for which none is specified, then we use the 
 value of default_entries_per_page.
+
+If this isn't set, then we behave exactly like Data::Pageset.
 
 =head2 entries_per_page
 
@@ -68,8 +82,8 @@ sub new {
 
 	$conf->{'current_page'} = 1 unless defined $conf->{'current_page'};
 
-	unless (exists $conf->{'variable_entries_per_page'} && ref $conf->{'variable_entries_per_page'} eq 'HASH') {
-		croak "entries_per_page must be a hashref";
+	if (exists $conf->{'variable_entries_per_page'} && ref $conf->{'variable_entries_per_page'} ne 'HASH') {
+		croak "variable_entries_per_page must be a hashref";
 	}
 
 	$self->{vari_pages} = $conf->{'variable_entries_per_page'} || {};
