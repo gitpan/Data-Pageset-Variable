@@ -1,5 +1,5 @@
 package Data::Pageset::Variable;
-$Data::Pageset::Variable::VERSION = '0.02';
+$Data::Pageset::Variable::VERSION = '0.03';
 
 use strict;
 use warnings;
@@ -39,15 +39,17 @@ So now you can!
 
 =head1 HAIKU
 
-Different numbers
-Of results on each page helps
-Tabulate results
+ Different numbers
+ Of results on each page helps
+ Tabulate results
 
 This arose as Tony (http://www.tmtm.com/nothing/) suggested to me that if I can't 
 write the documentation of a module in haiku, then it is doing too many things. 
 As I (also) believe that modules should be responsible for one concept, and one only.
 
 Also, I have no poetical ability, so forgive my clumsy attempt.
+
+=head1 METHODS
 
 =head2 variable_entries_per_page
 
